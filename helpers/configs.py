@@ -1,5 +1,5 @@
 """
-A module housing project constants, such as user credentials, urls and objects
+A module housing project constants, such as user credentials and urls
 """
 
 

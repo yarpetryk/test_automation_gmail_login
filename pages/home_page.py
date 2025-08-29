@@ -1,39 +1,73 @@
-from playwright.sync_api import Page, TimeoutError, expect
-from helpers.constants import WebPageUrl, UserCredentials
+"""Module housing  utilities for Home page"""
+from logging import info
+
 import allure
-from logging import info, debug, warning, error
+from playwright.sync_api import Page, expect
 
 
-class StartPage():
-
+class HomePage:
+    """Class providing utility for Home page"""
     def __init__(self, page: Page) -> None:
+        """Constructor method for Home page"""
         self.page = page
-        self.username_input = page.locator('#Username')
-        self.password_input = page.locator('#Password')
+        self.sign_in_button = page.get_by_role("link", name="Open the Sign into Gmail page")
+        self.email_input = page.locator('//*[contains(@type, "email")]')
+        self.password_input = page.locator('//*[contains(@type, "password")]')
         self.login_button = page.locator('//*[contains(@type, "submit")]')
-        self.logout_button = page.get_by_role("link", name="Abmelden")
-        self.devices_link = page.get_by_role("link", name="Boxen")
-        self.link_to_powerfox_platform = page.get_by_role("link", name="https://www.powerfox.energy")
-        self.user_email = page.get_by_role("link", name=UserCredentials.USERNAME)
-
+        self.next_button = page.get_by_role("button", name="Next")
+        self.inbox_link = page.get_by_role("link",  name="Inbox")
+        self.error_message = ''
 
     @allure.step('And load page')
-    def load(self, url) -> None:
+    def load(self, url: str) -> None:
+        """Method for starting the browser with provided url"""
         self.page.goto(url)
         self.page.wait_for_load_state('networkidle')
         info(f"The webpage {url} has been loaded successfully")
 
-    @allure.step('And login to account')
-    def login(self, login, password) -> None:
-        self.username_input.fill(login)
-        # self.username_input.press('Tab')
+    @allure.step('And the user logs in to the account')
+    def login(self,
+              email: str,
+              password: str) -> None:
+        """Method implements the user logging"""
+        self.sign_in_button.click()
+        self.email_input.fill(email)
+        self.next_button.click()
         self.password_input.fill(password)
-        self.login_button.click()
+        self.next_button.click()
 
+    @allure.step('And the user checks the logging status')
+    def is_user_logged_in(self) -> bool:
+        """Method implements the user logging validation"""
+        expect(self.inbox_link).to_be_visible()
+        info("The user has been logged in")
+        return True
 
-    @allure.step('And proceed to Devices page')
-    def proceed_to_devices_tab(self) -> None:
-        self.devices_link.click(timeout=5000)
-        self.page.wait_for_url(WebPageUrl.DEVICES_PAGE)
+    @allure.step('And the user provides invalid email')
+    def login_with_invalid_username(self,
+                                    email: str) -> None:
+        """Method implements the user email entering"""
+        self.sign_in_button.click()
+        self.email_input.fill(email)
+        self.next_button.click()
 
+    @allure.step('And the user provides invalid password')
+    def login_with_invalid_password(self,
+                                    email: str,
+                                    password: str) -> None:
+        """Method implements the user email and password entering"""
+        self.sign_in_button.click()
+        self.email_input.fill(email)
+        self.next_button.click()
+        self.password_input.fill(password)
+        self.next_button.click()
 
+    @allure.step('And the user checks the validation warning')
+    def is_validation_warning_shown(self,
+                                    page: Page,
+                                    validation_text: str) -> bool:
+        """Method implements the warning validation"""
+        el = page.get_by_text(validation_text)
+        expect(el).to_be_visible()
+        info(f"The validation warning '{validation_text}' is shown")
+        return True

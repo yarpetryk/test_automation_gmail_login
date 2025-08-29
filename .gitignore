@@ -1,0 +1,9 @@
+# Virtual Environment
+venv/
+
+# Test reports and logs
+allure-results/
+logs/
+
+# Python general
+.pytest_cache/
