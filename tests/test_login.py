@@ -1,35 +1,62 @@
+"""Module housing tests for Login flow"""
 import pytest
+from playwright.sync_api import Page
 
-from playwright.sync_api import expect
-from pages.home_page import StartPage
-from pages.devices_page import DevicesPage
-from helpers.constants import DeviceCredentials
+from helpers.configs import UserCredentials, WebPageUrl
+from pages.login_page import LoginPage
 
 
-class TestDeviceConfig:
+class TestLogin:
+    """Test class for Login flow"""
     @pytest.mark.smoke
-    # @pytest.mark.skip_browser('chromium')
-    # @pytest.mark.only_browser('chromium')
-    # @pytest.mark.parametrize('url', [WebPageUrl.START_PAGE])
-    # @pytest.mark.parametrize('device_id', [DeviceCredentials.DEVICEID,
-    #                                        pytest.param(DeviceCredentials.DEVICEID_2, marks=pytest.mark.xfail)])
+    def test_login_happy_path(self,
+                              login_page: LoginPage) -> None:
+        """Tests login flow with a happy path"""
+        login_page.load(WebPageUrl.HOME_PAGE)
+        login_page.login(
+            email=UserCredentials.EMAIL,
+            password=UserCredentials.PASSWORD)
+        assert login_page.is_user_logged_in()
 
-    @pytest.mark.parametrize('device_id', [DeviceCredentials.DEVICEID])
-    def test_ip_address(self,
-                        page,
-                        device_id: str,
-                        login_set_up,
-                        start_page: StartPage,
-                        devices_page: DevicesPage,
-                        assert_snapshot) -> None:
+    @pytest.mark.regression
+    @pytest.mark.parametrize(
+        'email, validation_text',
+        [
+            ('', 'Enter an email or phone number'),
+            (UserCredentials.EMAIL_INVALID, 'This browser or app may not be secure'),
+            (UserCredentials.EMAIL_WRONG_DOMAIN, 'This browser or app may not be secure')
+        ])
+    def test_login_email_is_incorrect(self,
+                                      page: Page,
+                                      login_page: LoginPage,
+                                      email: str,
+                                      validation_text: str) -> None:
+        """Tests login flow with an incorrect email:
+            - login flow with empty email input
+            - login flow with wrong email address
+            - login flow with wrong email domain"""
+        login_page.load(WebPageUrl.HOME_PAGE)
+        login_page.login_with_invalid_username(email=email)
+        assert login_page.is_validation_warning_shown(page,
+                                                      validation_text=validation_text)
 
-        # Proceed to devices tab
-        # assert_snapshot(page.screenshot())
-        start_page.proceed_to_devices_tab()
-
-        # Proceed to device details page
-        devices_page.select_device(device_id)
-
-        # Validate device IP address
-        expect(devices_page.device_ip_address).to_be_visible()
-
+    @pytest.mark.regression
+    @pytest.mark.parametrize(
+        'password, validation_text',
+        [
+            ('', 'Enter a password'),
+            (UserCredentials.PASSWORD_INVALID, 'Wrong password')
+         ])
+    def test_password_is_incorrect(self,
+                                   page: Page,
+                                   login_page: LoginPage,
+                                   password: str,
+                                   validation_text: str) -> None:
+        """Tests login flow with an incorrect password:
+            - login flow with empty password
+            - login flow with wrong password"""
+        login_page.load(WebPageUrl.HOME_PAGE)
+        login_page.login_with_invalid_password(email=UserCredentials.EMAIL,
+                                               password=password)
+        assert login_page.is_validation_warning_shown(page,
+                                                      validation_text=validation_text)
