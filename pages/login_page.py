@@ -1,14 +1,14 @@
-"""Module housing  utilities for Home page"""
+"""Module housing  utilities for Login page"""
 from logging import info
 
 import allure
 from playwright.sync_api import Page, expect
 
 
-class HomePage:
-    """Class providing utility for Home page"""
+class LoginPage:
+    """Class providing utility for Login page"""
     def __init__(self, page: Page) -> None:
-        """Constructor method for Home page"""
+        """Constructor method for Login page"""
         self.page = page
         self.sign_in_button = page.get_by_role("link", name="Open the Sign into Gmail page")
         self.email_input = page.locator('//*[contains(@type, "email")]')
@@ -67,6 +67,7 @@ class HomePage:
                                     page: Page,
                                     validation_text: str) -> bool:
         """Method implements the warning validation"""
+        page.wait_for_load_state('networkidle')
         el = page.get_by_text(validation_text)
         expect(el).to_be_visible()
         info(f"The validation warning '{validation_text}' is shown")

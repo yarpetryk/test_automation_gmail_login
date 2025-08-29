@@ -7,3 +7,5 @@ logs/
 
 # Python general
 .pytest_cache/
+.idea/
+**/__pycache__

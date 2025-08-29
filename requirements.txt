@@ -1,3 +1,4 @@
 pytest                   # Pytest is a testing framework which allows us to write test codes using python
 pytest-playwright        # Pytest plugin for Playwright
 allure-pytest            # Allure Framework is a flexible lightweight multi-language test report
+pytest-sugar             # Pytest plugin to enhance output view
