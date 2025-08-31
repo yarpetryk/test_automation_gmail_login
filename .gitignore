@@ -1,4 +1,4 @@
-# Virtual Environment
+# Virtual environment
 venv/
 
 # Test reports and logs
@@ -8,4 +8,4 @@ logs/
 # Python general
 .pytest_cache/
 .idea/
-**/__pycache__
+*/__pycache__

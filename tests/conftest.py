@@ -9,5 +9,5 @@ from pages.login_page import LoginPage
 
 @pytest.fixture
 def login_page(page: Page) -> LoginPage:
-    """Fixture for Home page"""
+    """Fixture for Login page"""
     return LoginPage(page)

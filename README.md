@@ -10,7 +10,7 @@
 ```
 pip install -r requirements.txt
 ```
-### Install playwright browser engine's
+### Install playwright browser engines
 ```
 playwright install
 ```

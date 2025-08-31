@@ -7,7 +7,7 @@ from pages.login_page import LoginPage
 
 
 class TestLogin:
-    """Test class for login flow"""
+    """Test class for Login flow"""
     @pytest.mark.smoke
     def test_login_happy_path(self,
                               login_page: LoginPage) -> None:
@@ -31,9 +31,9 @@ class TestLogin:
                                       login_page: LoginPage,
                                       email: str,
                                       validation_text: str) -> None:
-        """Test login flow with an incorrect email:
+        """Tests login flow with an incorrect email:
             - login flow with empty email input
-            - login flow with wrong email
+            - login flow with wrong email address
             - login flow with wrong email domain"""
         login_page.load(WebPageUrl.HOME_PAGE)
         login_page.login_with_invalid_username(email=email)
@@ -52,13 +52,11 @@ class TestLogin:
                                    login_page: LoginPage,
                                    password: str,
                                    validation_text: str) -> None:
-        """Test login flow with an incorrect password:
+        """Tests login flow with an incorrect password:
             - login flow with empty password
             - login flow with wrong password"""
         login_page.load(WebPageUrl.HOME_PAGE)
-        login_page.login_with_invalid_password(
-            email=UserCredentials.EMAIL,
-            password=password
-        )
+        login_page.login_with_invalid_password(email=UserCredentials.EMAIL,
+                                               password=password)
         assert login_page.is_validation_warning_shown(page,
                                                       validation_text=validation_text)
