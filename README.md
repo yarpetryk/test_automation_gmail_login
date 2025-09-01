@@ -49,5 +49,6 @@ allure serve ./allure-results
 
 ### Browse testing logs
 ```
-log/results.log
+logs/results.log
+
 ```
