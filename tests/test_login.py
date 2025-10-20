@@ -1,5 +1,6 @@
 """Module housing tests for Login flow"""
 import pytest
+from pytest_testrail.plugin import pytestrail
 from playwright.sync_api import Page
 
 from helpers.configs import UserCredentials, WebPageUrl
@@ -9,6 +10,7 @@ from pages.login_page import LoginPage
 class TestLogin:
     """Test class for Login flow"""
     @pytest.mark.smoke
+    @pytestrail.case('C1')
     def test_login_happy_path(self,
                               login_page: LoginPage) -> None:
         """Tests login flow with a happy path"""
@@ -44,8 +46,8 @@ class TestLogin:
     @pytest.mark.parametrize(
         'password, validation_text',
         [
-            ('', 'Enter a password'),
-            (UserCredentials.PASSWORD_INVALID, 'Wrong password')
+            pytest.param('', 'Enter a password', marks=pytestrail.case("C2")),
+            pytest.param(UserCredentials.PASSWORD_INVALID, 'Wrong password', marks=pytestrail.case("C3"))
          ])
     def test_password_is_incorrect(self,
                                    page: Page,
